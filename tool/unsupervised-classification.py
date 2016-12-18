@@ -13,7 +13,7 @@ from sklearn import metrics
 #import numpy as np
 import json
 
-K = 10
+K = 8
 
 # read json as native structure
 def read_json(filename):
@@ -29,7 +29,7 @@ def write_json(filename, data):
 
 
 def validate_word(word):
-    if word[0] == '@' or word == 'amp;' or word[0:2] == '.@':
+    if word[0] == '@' or word == 'amp;' or word[0:2] == '.@' or word == 'rt':
         return False
     else:
         return True
@@ -46,7 +46,10 @@ for tweet in documents:
     tweet = tweet.lower()
 
     # convert www.* or https?://* to URL
-    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))','URL',tweet)
+    tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', '', tweet)
+
+    # remove 'obama'
+    tweet = re.sub('obama', '', tweet)
 
     # replace #word with word
     tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
