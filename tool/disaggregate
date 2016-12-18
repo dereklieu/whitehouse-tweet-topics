@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs')
+var path = require('path')
 var argv = require('minimist')(process.argv.slice(2))
 var input = argv.input
 
@@ -9,6 +10,51 @@ if (!input) {
   process.exit()
 }
 
+var output = '../src/json'
 document = JSON.parse(fs.readFileSync(input, 'utf-8'))
-document.forEach(function (d) {
+
+var aggregate = {}
+document.forEach(function (topicData, i) {
+  var summary = {}
+  var count = topicData.length
+  var sorted = topicData.map((d) => Object.assign({}, d, {
+    time: new Date(d.year, d.month - 1, d.day)
+  })).sort((a, b) => a.time < b.time ? -1 : 1)
+
+  // get 20 random tweets
+  var sample = []
+  while (sample.length < 20) {
+    var idx = Math.floor(Math.random() * (count + 1))
+    var item = topicData[idx]
+    if (!sample.find((d) => d.id === item.id)) {
+      sample.push(item)
+    }
+  }
+
+  var bymonth = {}
+  sorted.forEach(function (d) {
+    var prop = String(d.year) + String(d.month - 1)
+    bymonth[prop] = bymonth[prop] || 0
+    bymonth[prop] += 1
+  })
+
+  summary.count = count
+  summary.span = [sorted[0].time.getTime(), sorted[count - 1].time.getTime()]
+  summary.sample = sample
+  summary.months = Object.keys(bymonth).sort().map((month) => ({
+    date: month,
+    count: bymonth[month]
+  }))
+
+  aggregate[i] = summary
+
+  // clean sorted array for writing
+  sorted.forEach(function (d) {
+    delete d.time
+  })
+
+  // write the sorted data
+  fs.writeFileSync(path.resolve(output, i + '.json'), JSON.stringify(sorted))
 });
+
+fs.writeFileSync(path.resolve(output, 'aggregate.json'), JSON.stringify(aggregate))
