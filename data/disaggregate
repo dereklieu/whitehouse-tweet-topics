@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+var fs = require('fs')
+var argv = require('minimist')(process.argv.slice(2))
+var input = argv.input
+
+if (!input) {
+  console.log('Needs input')
+  process.exit()
+}
+
+document = JSON.parse(fs.readFileSync(input, 'utf-8'))
+document.forEach(function (d) {
+});
