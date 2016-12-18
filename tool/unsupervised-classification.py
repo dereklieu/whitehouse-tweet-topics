@@ -61,7 +61,7 @@ for tweet in documents:
     tokenized = [word for word in wordpunct_tokenize(tweet) if word not in stoplist and len(word) > 1]
 
     # stem, join, and append to list.
-    corpus.append(' '.join([stemmer.stem(word) for word in tokenized]).encode('utf8'))
+    corpus.append(' '.join([stemmer.stem(word) for word in tokenized]).encode('utf8', 'ignore'))
 
 # vectorize using tfidf
 vectorizer = TfidfVectorizer()
@@ -79,7 +79,8 @@ for idx, label in enumerate(clustered_labels):
     # only need the first part, ie 2016-11-12
     tweeted_at = raw_data['timestamp'].split(' ')[0].split('-')
     result = {}
-    result['text'] = raw_data['text'].encode('utf-8')
+    result['text'] = raw_data['text'].encode('utf-8', 'ignore')
+    result['corpus'] = corpus[idx]
     result['id'] = raw_data['tweet_id']
     result['year'] = tweeted_at[0]
     result['month'] = tweeted_at[1]
