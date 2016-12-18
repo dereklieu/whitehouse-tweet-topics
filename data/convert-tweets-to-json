@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+
+cat ./raw/potus/tweets.csv | ../node_modules/.bin/csvtojson > ./output/potus.json

@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+
+var fs = require('fs')
+var assert = require('assert')
+var process = require('process')
+var argv = require('minimist')(process.argv.slice(2))
+var filename = argv.filename // Warning, this overwrites
+
+process.stdin.setEncoding('utf8')
+process.stdin.on('readable', listen)
+
+var document, set, terms, selected
+
+load()
+query()
+
+function load () {
+  document = JSON.parse(fs.readFileSync(filename, 'utf-8'))
+  set = document.find((d) => !d.topic)
+  terms = set.terms[0];
+}
+
+function query () {
+  assert(terms.length)
+  console.log('\n')
+  console.log(set.text)
+  console.log('\n')
+  terms.forEach((t, i) => {
+    console.log(`(${i}) - ${t.term}`)
+  })
+  console.log('\n')
+  console.log('Which one matches? If none match write one in')
+}
+
+function listen () {
+  var chunk = process.stdin.read()
+  if (chunk !== null) {
+    chunk = chunk.trim()
+    if (terms[+chunk]) {
+      selected = terms[+chunk].term
+      confirm()
+    } else if (chunk === 'y' && selected) {
+      save(selected)
+    } else if (chunk === 'n') {
+      query()
+    } else {
+      selected = chunk
+      confirm()
+    }
+  }
+}
+
+function confirm () {
+  console.log(`Entering "${selected}" - is that correct? y/n`)
+}
+
+function save (topic) {
+  set.topic = topic
+  fs.writeFileSync(filename, JSON.stringify(document))
+  load()
+  query()
+}

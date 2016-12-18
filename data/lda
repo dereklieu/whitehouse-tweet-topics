@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+var through = require('through2')
+var argv = require('minimist')(process.argv.slice(2))
+var JSONStream = require('JSONStream')
+var lda = require('lda')
+
+var path = argv.path
+process.stdin.pipe(JSONStream.parse('*'))
+.pipe(through.obj(write))
+.pipe(JSONStream.stringify())
+.pipe(process.stdout)
+
+function write (obj, enc, cb) {
+  var text = obj.text
+  var sentences = text.match( /[^\.!\?]+[\.!\?]+/g )
+  obj.terms = lda([text], 1, 5, null, null, null, 100)
+  this.push({
+    terms: obj.terms,
+    text: obj.text,
+    id: obj.tweet_id
+  })
+  cb()
+}

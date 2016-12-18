@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+
+var fs = require('fs')
+var natural = require('natural')
+var lda = require('lda')
+
+var doc = JSON.parse(fs.readFileSync('./potus.json', 'utf-8'))
+var training = doc.filter((d) => d.topic && d.topic !== 'skip')
+
+var classifier = new natural.BayesClassifier();
+training.forEach((d) => {
+  classifier.addDocument(d.terms[0].map((d) => d.term), d.topic)
+})
+classifier.train()
+
+var potus = JSON.parse(fs.readFileSync('./output/potus.json', 'utf-8'))
+var result = potus.map(function (obj) {
+  var terms = lda([obj.text], 1, 5, null, null, null, 100)
+  terms = terms[0].map((d) => d.term)
+  console.log(terms)
+  return {
+    text: obj.text,
+    topic: classifier.classify(terms),
+    id: obj.tweet_id
+  }
+})
+
+fs.writeFileSync('./output/classified.json', JSON.stringify(result))
