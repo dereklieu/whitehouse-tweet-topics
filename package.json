@@ -1,0 +1,26 @@
+{
+  "name": "whitehouse-twitter-topics",
+  "version": "1.0.0",
+  "description": "Topic analysis and visualization of Whitehouse, POTUS, and FLOTUS twitter posts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Derek Lieu",
+  "license": "ISC",
+  "devDependencies": {
+    "JSONStream": "^1.2.1",
+    "csvtojson": "^1.0.3",
+    "get-stdin": "^5.0.1",
+    "lda": "^0.1.9",
+    "minimist": "^1.2.0",
+    "natural": "^0.4.0",
+    "ndjson": "^1.4.3",
+    "simple-statistics": "^2.2.0",
+    "through2": "^2.0.1"
+  },
+  "dependencies": {
+    "d3": "^4.4.0",
+    "d3-scale": "^1.0.4"
+  }
+}
