@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
 var through = require('through2')
-var argv = require('minimist')(process.argv.slice(2))
 var JSONStream = require('JSONStream')
 var lda = require('lda')
 
-var path = argv.path
 process.stdin.pipe(JSONStream.parse('*'))
 .pipe(through.obj(write))
 .pipe(JSONStream.stringify())
