@@ -1,6 +1,7 @@
 'use strict'
 var path = require('path')
 var webpack = require('webpack')
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var PRODUCTION = (process.env.NODE_ENV === 'production')
 
@@ -17,16 +18,24 @@ var config = {
         path.resolve(__dirname, 'src/app')
       ],
       loader: 'babel-loader'
+    }, {
+      test: /\.scss$/,
+      loader: ExtractTextPlugin.extract('css!sass')
     }]
   },
+  plugins: [
+    new ExtractTextPlugin('style.css', {
+      allChunks: true
+    })
+  ]
 }
 
 if (PRODUCTION) {
-  config.plugins = [
+  config.plugins.push(
     new webpack.optimize.UglifyJsPlugin({
       compress: { warnings: false }
     })
-  ]
+  )
 }
 
 module.exports = config
