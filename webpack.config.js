@@ -14,9 +14,7 @@ var config = {
   module: {
     loaders: [{
       test: /\.js$/,
-      include: [
-        path.resolve(__dirname, 'src/app')
-      ],
+      exclude: /node_modules/,
       loader: 'babel-loader'
     }, {
       test: /\.scss$/,
