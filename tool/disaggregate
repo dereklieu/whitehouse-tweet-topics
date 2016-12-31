@@ -90,6 +90,9 @@ topics.forEach(prop => {
     month: month,
     value: aggregate[prop].months[month]
   }))
+
+  // no longer need span as months are normalized
+  delete aggregate[prop].span
 })
 
 fs.writeFileSync(path.resolve(output, 'aggregate.json'), JSON.stringify(aggregate))
