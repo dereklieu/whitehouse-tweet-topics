@@ -1,5 +1,6 @@
 'use strict'
 
+import { scaleLinear } from 'd3'
 import { isElement } from 'lodash'
 
 export function bind (container) {
@@ -8,8 +9,14 @@ export function bind (container) {
   }
 
   return function render (data) {
-    let dimensions = container.getBoundingClientRect()
-    console.log(dimensions)
+    const { width, height } = container.getBoundingClientRect()
+
+    console.log(width, height)
+    console.log(data)
+
+    const properties = Object.keys(data).sort()
+    const n = properties.length
+    const x = scaleLinear()
   }
 }
 
