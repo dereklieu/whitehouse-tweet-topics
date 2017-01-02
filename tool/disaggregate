@@ -55,8 +55,8 @@ document.forEach(function (topicData, i) {
   fs.writeFileSync(path.resolve(output, i + '.json'), JSON.stringify(sorted))
 });
 
-// fill in missing months
-// need the full aggregate to get the extent
+// fill in missing months,
+// combine into a single data structure
 var topics = Object.keys(aggregate)
 var min = new Date(d3.min(topics.map(prop => aggregate[prop].span[0])))
 var max = new Date(d3.max(topics.map(prop => aggregate[prop].span[1])))
@@ -70,14 +70,19 @@ console.log(currentYear, '/', currentMonth)
 console.log('-')
 console.log(endYear, '/', endMonth)
 
+var aggregatedMonths = [] // a chronologically-sorted month-by-month count of tweets
+
 while (currentMonth < endMonth && currentYear <= endYear) {
   while (currentMonth < 12) {
     if (currentYear === endYear && currentMonth > endMonth) { break }
     var dateProp = String(currentYear) + String(currentMonth)
-    console.log(dateProp)
+    // console.log(dateProp)
+
+    var aggregatedMonth = { date: dateProp }
     topics.forEach(prop => {
-      aggregate[prop].months[dateProp] = aggregate[prop].months[dateProp] || 0
+      aggregatedMonth[prop] = aggregate[prop].months[dateProp] || 0
     })
+    aggregatedMonths.push(aggregatedMonth)
     currentMonth += 1
   }
   currentMonth = 0
@@ -86,13 +91,16 @@ while (currentMonth < endMonth && currentYear <= endYear) {
 
 // replace the months props with a sorted array
 topics.forEach(prop => {
-  aggregate[prop].months = Object.keys(aggregate[prop].months).map(month => ({
-    month: month,
-    value: aggregate[prop].months[month]
-  }))
-
   // no longer need span as months are normalized
   delete aggregate[prop].span
+
+  // no longer need disaggregated months
+  delete aggregate[prop].months
 })
+
+aggregate = {
+  months: aggregatedMonths,
+  topics: aggregate
+}
 
 fs.writeFileSync(path.resolve(output, 'aggregate.json'), JSON.stringify(aggregate))
