@@ -1,0 +1,28 @@
+language: node_js
+node_js:
+- '6.0'
+env:
+  global:
+  - GH_REF=github.com/dereklieu/whitehouse-tweet-topics.git
+  - CXX=g++-4.8
+  - secure: KpzC2P153F8BE5TIkzGpB775MM8wqAELl1PQZEvbweviWO0BXJGfXRGkdZY1HbPBReDvEyj9nLemjXMXOT5CtUL1P9UfqZYo0eGiv0OgzRweRa6VRusjjiycEgbCU6ITsGiqnDNO83WKErjsEN/DWb/k7Z98rm/9LHIFvGvTncA7mg6FVWC5luElgSqj5UTlA9lucI1V8i5/9vV+qgLd2zIIVPtsTM166NdET/tZici7UvEfd3sa5e8umGAjjpfW8DdYJCu8gb4sl74ayGXBJntAG5QFwLsKSVZq6KYfrLCIeuWlCX9EmbJ2xOfrBsXqWekwSXGkokEgFz6sjVHCHI4ypUbxRCVWcRcgSB5P1JJqU6S4ZGJHNlBsyW8vMWLxeRNFZnIOhwLr3zzo84iWXBb+3UYuEm28s9Ze3mB71evf6n2wxLRdS8AuV6LIsUPeBvgCmRG9915zlkiTatKLwo8GVtdi2/NY5bTCMmtsYu3IW5BL2vNv1XM6u/bN+GT89xbGUqCJW3vhZcyPDkFSg0xI7ybfjKIRBUrVDhp5dzsX4XowecUE0xhcFnFPpb34Uhc7dEFNgQJ/mAiikdcb9hgz4DIMskfY386xMw5UmMMqEwArshtvaBzFytXHoYzKNvhxpMHQ0co/vx1uL9LPWZ3CkrXj5HNAPu9vh0d9ynQ=
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+cache:
+  apt: true
+  directories:
+  - node_modules
+before_install:
+- chmod +x ./.build_scripts/deploy.sh
+script:
+- npm run build
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: ".build_scripts/deploy.sh"
+  on:
+    branch: "master"
