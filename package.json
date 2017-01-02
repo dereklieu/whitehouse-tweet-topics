@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "watch": "./node_modules/.bin/webpack --progress --colors --watch",
-    "serve": "./node_modules/.bin/live-server --watch=./index.html,./dist,./src/json"
+    "serve": "./node_modules/.bin/live-server --watch=./index.html,./dist,./src/json",
+    "build": "NODE_ENV=production ./node_modules/.bin/webpack --progress --colors"
   },
   "author": "Derek Lieu",
   "license": "ISC",
