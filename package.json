@@ -4,23 +4,36 @@
   "description": "Topic analysis and visualization of Whitehouse, POTUS, and FLOTUS twitter posts",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "watch": "./node_modules/.bin/webpack --progress --colors --watch",
+    "serve": "./node_modules/.bin/live-server --watch=./index.html,./dist,./src/json",
+    "build": "NODE_ENV=production ./node_modules/.bin/webpack --progress --colors"
   },
   "author": "Derek Lieu",
   "license": "ISC",
   "devDependencies": {
     "JSONStream": "^1.2.1",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "css-loader": "^0.26.1",
     "csvtojson": "^1.0.3",
+    "extract-text-webpack-plugin": "^1.0.1",
     "get-stdin": "^5.0.1",
     "lda": "^0.1.9",
+    "live-server": "^1.1.0",
     "minimist": "^1.2.0",
     "natural": "^0.4.0",
     "ndjson": "^1.4.3",
+    "node-sass": "^4.1.1",
+    "sass-loader": "^4.1.1",
     "simple-statistics": "^2.2.0",
-    "through2": "^2.0.1"
+    "style-loader": "^0.13.1",
+    "through2": "^2.0.1",
+    "webpack": "^1.14.0"
   },
   "dependencies": {
     "d3": "^4.4.0",
-    "d3-scale": "^1.0.4"
+    "d3-scale": "^1.0.4",
+    "lodash": "^4.17.3"
   }
 }
