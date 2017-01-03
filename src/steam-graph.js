@@ -117,7 +117,7 @@ export function bind (container) {
     window.addEventListener('resize', resizeHandler)
 
     return function unbind () {
-      // TODO remove svg element from container
+      svg.remove()
       window.removeEventListener('resize', resizeHandler)
     }
   }
