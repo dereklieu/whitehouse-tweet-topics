@@ -7,7 +7,7 @@ $light: #BBB;
 }
 
 .tick-line {
-  stroke: $light;
+  stroke: lighten($light, 20%);
 }
 
 .overlay {
@@ -20,5 +20,5 @@ $light: #BBB;
 }
 
 .overlay-line {
-  stroke: $main;
+  stroke: lighten($main, 20%);
 }
