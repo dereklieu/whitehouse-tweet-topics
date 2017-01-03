@@ -2,8 +2,8 @@
 
 require('../style/steam-graph.scss')
 
-import { select, selectAll } from 'd3-selection'
-import { scaleLinear, scaleTime } from 'd3-scale'
+import { select, selectAll, mouse } from 'd3-selection'
+import { scaleLinear } from 'd3-scale'
 import { area, curveCardinal, stack, stackOrderInsideOut, stackOffsetWiggle } from 'd3-shape'
 import { isElement, without, throttle } from 'lodash'
 
@@ -19,6 +19,10 @@ export function bind (container) {
   const svg = select(container).append('svg')
   const axis = svg.append('g').attr('class', 'x axis')
   const chart = svg.append('g').attr('class', 'steam-graph')
+  const overlay = svg.append('g')
+  .attr('class', 'overlay')
+  .attr('transform', 'translate(-100,' + getMarginTop() + ')')
+
   const x = scaleLinear()
   const y = scaleLinear()
   const color = scaleLinear()
@@ -63,6 +67,9 @@ export function bind (container) {
     .attr('x2', d => x(d.index))
     .attr('y1', getMarginTop())
     .attr('y2', height)
+
+    // hide overlay on resize
+    overlay.attr('transform', 'translate(-100,' + getMarginTop() + ')')
   }
 
   function onWindowResize () {
@@ -93,7 +100,7 @@ export function bind (container) {
     .attr('d', areaFn)
     .style('fill', () => color(Math.random()))
 
-    const years = months.map((d, i) => +d.date.month === 0 ? { year: d.date.year - 1, index: i } : false).filter(Boolean)
+    const years = months.map((d, i) => +d.date.month === 0 ? { year: d.date.year, index: i } : false).filter(Boolean)
     const ticks = axis.selectAll('.tick')
     .data(years)
     .enter().append('g')
@@ -112,6 +119,25 @@ export function bind (container) {
     .attr('x2', d => x(d.index))
     .attr('y1', getMarginTop())
     .attr('y2', height)
+
+    overlay.append('text')
+    .attr('class', 'overlay-text')
+    .attr('dy', 10)
+
+    overlay.append('line')
+    .attr('class', 'overlay-line')
+    .attr('y1', 15)
+    .attr('y2', height - getMarginTop())
+
+    svg.on('mousemove', throttle(function (d) {
+      let location = mouse(this)
+      let index = Math.round(x.invert(location[0]))
+      let item = months[index]
+
+      overlay.attr('transform', 'translate(' + location[0] + ',' + getMarginTop() + ')')
+      overlay.select('.overlay-text')
+      .text((item.date.month + 1) + '/' + item.date.year)
+    }, 25, { trailing: false }))
 
     const resizeHandler = throttle(onWindowResize, 400, { leading: false })
     window.addEventListener('resize', resizeHandler)
