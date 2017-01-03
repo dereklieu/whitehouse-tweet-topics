@@ -24,7 +24,8 @@ var config = {
   plugins: [
     new ExtractTextPlugin('style.css', {
       allChunks: true
-    })
+    }),
+    new webpack.EnvironmentPlugin(['NODE_ENV'])
   ]
 }
 

@@ -2,8 +2,7 @@
 
 import { resolve } from 'url'
 import { json } from 'd3'
-
-const basePath = 'src/json/'
+import  { basePath } from './config'
 
 export function fetchAggregate (cb) {
   json(resolve(basePath, 'aggregate.json'), function (err, data) {
