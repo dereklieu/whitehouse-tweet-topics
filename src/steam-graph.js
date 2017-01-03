@@ -5,7 +5,7 @@ require('../style/steam-graph.scss')
 import { select, selectAll } from 'd3-selection'
 import { scaleLinear, scaleTime } from 'd3-scale'
 import { area, curveCardinal, stack, stackOrderInsideOut, stackOffsetWiggle } from 'd3-shape'
-import { isElement, without } from 'lodash'
+import { isElement, without, throttle } from 'lodash'
 
 function parseDate (dateString) {
   return new Date(dateString.slice(0, 4), dateString.slice(4, 6))
@@ -48,6 +48,32 @@ export function bind (container) {
     y.range([height / 1.5, 0])
   }
 
+  function resize () {
+    chart.selectAll('.layer')
+    .attr('d', areaFn)
+
+    const ticks = axis.selectAll('.tick')
+    ticks.selectAll('.tick-text')
+    .attr('y', getMarginTop())
+    .attr('dy', -5)
+    .attr('x', d => x(d.index))
+
+    ticks.selectAll('.tick-line')
+    .attr('x1', d => x(d.index))
+    .attr('x2', d => x(d.index))
+    .attr('y1', getMarginTop())
+    .attr('y2', height)
+  }
+
+  function onWindowResize () {
+    reflow()
+    resize()
+  }
+
+  function getMarginTop () {
+    return 150 // this *might* change on mobile
+  }
+
   return function render (data) {
     reflow()
     const { topics, months, max } = data
@@ -67,7 +93,6 @@ export function bind (container) {
     .attr('d', areaFn)
     .style('fill', () => color(Math.random()))
 
-    const marginTop = 150
     const years = months.map((d, i) => +d.date.month === 0 ? { year: d.date.year - 1, index: i } : false).filter(Boolean)
     const ticks = axis.selectAll('.tick')
     .data(years)
@@ -76,7 +101,7 @@ export function bind (container) {
 
     ticks.append('text')
     .text(d => d.year)
-    .attr('y', marginTop)
+    .attr('y', getMarginTop())
     .attr('dy', -5)
     .attr('x', d => x(d.index))
     .attr('class', 'tick-text')
@@ -85,13 +110,15 @@ export function bind (container) {
     .attr('class', 'tick-line')
     .attr('x1', d => x(d.index))
     .attr('x2', d => x(d.index))
-    .attr('y1', marginTop)
+    .attr('y1', getMarginTop())
     .attr('y2', height)
-  }
-}
 
-export function unbind (container) {
-  if (!isElement(container)) {
-    throw new Error('Bind must be passed a node')
+    const resizeHandler = throttle(onWindowResize, 400, { leading: false })
+    window.addEventListener('resize', resizeHandler)
+
+    return function unbind () {
+      // TODO remove svg element from container
+      window.removeEventListener('resize', resizeHandler)
+    }
   }
 }
