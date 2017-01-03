@@ -1,16 +1,15 @@
 'use strict'
 
-import {
-  area,
-  curveCardinal,
-  select,
-  selectAll,
-  scaleLinear,
-  stack,
-  stackOrderInsideOut,
-  stackOffsetWiggle
-} from 'd3'
+require('../style/steam-graph.scss')
+
+import { select, selectAll } from 'd3-selection'
+import { scaleLinear, scaleTime } from 'd3-scale'
+import { area, curveCardinal, stack, stackOrderInsideOut, stackOffsetWiggle } from 'd3-shape'
 import { isElement, without } from 'lodash'
+
+function parseDate (dateString) {
+  return new Date(dateString.slice(0, 4), dateString.slice(4, 6))
+}
 
 export function bind (container) {
   if (!isElement(container)) {
@@ -18,7 +17,8 @@ export function bind (container) {
   }
 
   const svg = select(container).append('svg')
-  const chart = svg.append('g')
+  const axis = svg.append('g').attr('class', 'x axis')
+  const chart = svg.append('g').attr('class', 'steam-graph')
   const x = scaleLinear()
   const y = scaleLinear()
   const color = scaleLinear()
@@ -34,8 +34,12 @@ export function bind (container) {
   .y0(d => y(d[0]))
   .y1(d => y(d[1]))
 
+  let width, height
+
   function reflow () {
-    const { width, height } = container.getBoundingClientRect()
+    const clientRect = container.getBoundingClientRect()
+    width = clientRect.width
+    height = clientRect.height
 
     svg.attr('width', width)
     .attr('height', height)
@@ -47,6 +51,7 @@ export function bind (container) {
   return function render (data) {
     reflow()
     const { topics, months, max } = data
+    console.log(months)
 
     x.domain([0, months.length - 1])
     y.domain([0, max])
@@ -61,6 +66,27 @@ export function bind (container) {
     .attr('class', 'layer')
     .attr('d', areaFn)
     .style('fill', () => color(Math.random()))
+
+    const marginTop = 150
+    const years = months.map((d, i) => +d.date.month === 0 ? { year: d.date.year - 1, index: i } : false).filter(Boolean)
+    const ticks = axis.selectAll('.tick')
+    .data(years)
+    .enter().append('g')
+    .attr('class', 'tick')
+
+    ticks.append('text')
+    .text(d => d.year)
+    .attr('y', marginTop)
+    .attr('dy', -5)
+    .attr('x', d => x(d.index))
+    .attr('class', 'tick-text')
+
+    ticks.append('line')
+    .attr('class', 'tick-line')
+    .attr('x1', d => x(d.index))
+    .attr('x2', d => x(d.index))
+    .attr('y1', marginTop)
+    .attr('y2', height)
   }
 }
 
