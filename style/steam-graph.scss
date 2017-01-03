@@ -1,11 +1,24 @@
 $main: #666;
-$light: #EEE;
+$light: #BBB;
 
 .tick-text {
   text-anchor: middle;
-  fill: $main;
+  fill: $light;
 }
 
 .tick-line {
   stroke: $light;
+}
+
+.overlay {
+  transition: transform 0.1s;
+}
+
+.overlay-text {
+  text-anchor: middle;
+  fill: $main;
+}
+
+.overlay-line {
+  stroke: $main;
 }
