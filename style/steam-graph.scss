@@ -1,0 +1,11 @@
+$main: #666;
+$light: #EEE;
+
+.tick-text {
+  text-anchor: middle;
+  fill: $main;
+}
+
+.tick-line {
+  stroke: $light;
+}

@@ -77,7 +77,7 @@ while (currentMonth < endMonth && currentYear <= endYear) {
     var dateProp = String(currentYear) + String(currentMonth)
     // console.log(dateProp)
 
-    var aggregatedMonth = { date: dateProp }
+    var aggregatedMonth = { date: { year: currentYear, month: currentMonth } }
     topics.forEach(prop => {
       aggregatedMonth[prop] = aggregate[prop].months[dateProp] || 0
     })
