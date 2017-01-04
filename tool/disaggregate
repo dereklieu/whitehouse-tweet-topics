@@ -38,7 +38,7 @@ document.forEach(function (topicData, i) {
     var prop = String(d.year) + String(d.month - 1)
     bymonth[prop] = bymonth[prop] || {count: 0, sample: []}
     bymonth[prop].count += 1
-    bymonth[prop].sample.push({text: d.text, id: d.id})
+    bymonth[prop].sample.push({text: d.text.replace('&amp;', '&'), id: d.id})
   })
 
   summary.count = count
