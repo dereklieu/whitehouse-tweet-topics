@@ -27,6 +27,7 @@ document.forEach(function (topicData, i) {
   while (sample.length < 20) {
     var idx = Math.floor(Math.random() * (count + 1))
     var item = topicData[idx]
+    if (!item) { break }
     if (!sample.find((d) => d.id === item.id)) {
       sample.push(item)
     }

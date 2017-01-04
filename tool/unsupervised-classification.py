@@ -13,7 +13,7 @@ from sklearn import metrics
 #import numpy as np
 import json
 
-K = 8
+K = 12
 
 # read json as native structure
 def read_json(filename):
@@ -45,11 +45,8 @@ for tweet in documents:
 
     tweet = tweet.lower()
 
-    # convert www.* or https?://* to URL
+    # convert www.* or https?://* to ''
     tweet = re.sub('((www\.[^\s]+)|(https?://[^\s]+))', '', tweet)
-
-    # remove 'obama'
-    tweet = re.sub('obama', '', tweet)
 
     # replace #word with word
     tweet = re.sub(r'#([^\s]+)', r'\1', tweet)
@@ -71,7 +68,7 @@ vectorizer = TfidfVectorizer()
 X = vectorizer.fit_transform(corpus)
 print X.shape
 
-km = KMeans(n_clusters=K, max_iter=500)
+km = KMeans(n_clusters=K, max_iter=200, n_init=20)
 km.fit(X)
 
 clustered_labels = km.labels_
