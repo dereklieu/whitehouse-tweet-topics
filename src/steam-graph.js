@@ -212,5 +212,6 @@ function sampleTweet (textNode, tweets, rightAlign) {
   .merge(tspans)
   .attr('dx', rightAlign ? -5 : 5)
   .text(d => d)
-  .exit().remove()
+
+  tspans.exit().remove()
 }
