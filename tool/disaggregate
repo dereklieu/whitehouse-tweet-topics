@@ -48,6 +48,10 @@ document.forEach(function (topicData, i) {
 
   aggregate[i] = summary
 
+  if (sorted.length > 500) {
+    sorted = getRandomSample(sorted, 500).sort((a, b) => a.time < b.time ? -1 : 1)
+  }
+
   // clean sorted array for writing
   sorted.forEach(function (d) {
     delete d.time
