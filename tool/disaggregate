@@ -36,8 +36,9 @@ document.forEach(function (topicData, i) {
   var bymonth = {}
   sorted.forEach(function (d) {
     var prop = String(d.year) + String(d.month - 1)
-    bymonth[prop] = bymonth[prop] || 0
-    bymonth[prop] += 1
+    bymonth[prop] = bymonth[prop] || {count: 0, sample: []}
+    bymonth[prop].count += 1
+    bymonth[prop].sample.push({text: d.text, id: d.id})
   })
 
   summary.count = count
@@ -72,6 +73,7 @@ console.log('-')
 console.log(endYear, '/', endMonth)
 
 var aggregatedMonths = [] // a chronologically-sorted month-by-month count of tweets
+var aggregatedSamples = []
 while (currentMonth < endMonth && currentYear <= endYear) {
   while (currentMonth < 12) {
     if (currentYear === endYear && currentMonth > endMonth) { break }
@@ -79,10 +81,19 @@ while (currentMonth < endMonth && currentYear <= endYear) {
     // console.log(dateProp)
 
     var aggregatedMonth = { date: { year: currentYear, month: currentMonth } }
+    var aggregatedSample = {}
     topics.forEach(prop => {
-      aggregatedMonth[prop] = aggregate[prop].months[dateProp] || 0
+      var month = aggregate[prop].months[dateProp]
+      if (!month) {
+        aggregatedMonth[prop] = 0
+        aggregatedSample[prop] = []
+      } else {
+        aggregatedMonth[prop] = month.count
+        aggregatedSample[prop] = month.sample.length > 3 ? getRandomSample(month.sample, 3) : month.sample
+      }
     })
     aggregatedMonths.push(aggregatedMonth)
+    aggregatedSamples.push(aggregatedSample)
     currentMonth += 1
   }
   currentMonth = 0
@@ -102,8 +113,19 @@ topics.forEach(prop => {
 
 aggregate = {
   months: aggregatedMonths,
-  topics: aggregate,
+  topics: aggregatedSamples,
   max: max
 }
 
 fs.writeFileSync(path.resolve(output, 'aggregate.json'), JSON.stringify(aggregate))
+
+function getRandomSample(arr, size) {
+  var shuffled = arr.slice(0), i = arr.length, temp, index;
+  while (i--) {
+    index = Math.floor((i + 1) * Math.random());
+    temp = shuffled[index];
+    shuffled[index] = shuffled[i];
+    shuffled[i] = temp;
+  }
+  return shuffled.slice(0, size);
+}

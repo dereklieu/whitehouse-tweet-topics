@@ -79,7 +79,7 @@ for idx, label in enumerate(clustered_labels):
     # only need the first part, ie 2016-11-12
     tweeted_at = raw_data['timestamp'].split(' ')[0].split('-')
     result = {}
-    result['text'] = raw_data['text'].encode('utf-8', 'ignore')
+    result['text'] = raw_data['text']
     result['corpus'] = corpus[idx]
     result['id'] = raw_data['tweet_id']
     result['year'] = tweeted_at[0]
