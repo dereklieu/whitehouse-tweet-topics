@@ -78,27 +78,65 @@ export function bind (container) {
   }
 
   function getMarginTop () {
-    return 150 // this *might* change on mobile
+    return 100 // this *might* change on mobile
   }
 
   return function render (data) {
     reflow()
     const { topics, months, max } = data
-    console.log(months)
 
     x.domain([0, months.length - 1])
     y.domain([0, max])
+    color.domain([0, Object.keys(topics[0]).length])
 
     const keys = without(Object.keys(months[0]), 'date')
     stackFn.keys(keys)
     const layers = stackFn(months)
 
-    chart.selectAll('.layer')
+    const paths = chart.selectAll('.layer')
     .data(layers)
     .enter().append('path')
     .attr('class', 'layer')
     .attr('d', areaFn)
-    .style('fill', () => color(Math.random()))
+    .style('fill', (d, i) => color(i))
+
+    // toggle the opacity on mouse over/out
+    paths.on('mouseover', function (d) {
+      paths.style('opacity', (path, i) => {
+        return +d.key === i ? 1 : 0.25
+      })
+    })
+    .on('mouseout', function () {
+      paths.style('opacity', 1)
+      overlay.attr('transform', 'translate(-100,' + getMarginTop() + ')')
+      overlayDate.text('')
+      overlayText.selectAll('tspan').remove()
+      currentId = null
+    })
+
+    let currentId = null // update sample tweet only on change
+    paths.on('mousemove', throttle(function (d) {
+      let location = mouse(this)
+      // update the location of the guide line on move
+      overlay.attr('transform', 'translate(' + location[0] + ',' + getMarginTop() + ')')
+
+      let index = Math.round(x.invert(location[0]))
+      let { key } = d
+
+      // if we've changed either the month or the layer, update the text
+      let identifier = String(index) + String(key)
+      if (identifier !== currentId) {
+        currentId = identifier
+        let month = months[index]
+        let tweets = topics[index][+key]
+
+        overlayDate.text((month.date.month + 1) + '/' + month.date.year)
+
+        let rightAlign = index > months.length * 0.6
+        sampleTweet(overlayText, tweets, rightAlign)
+        overlayText.style('text-anchor', rightAlign ? 'end' : 'start')
+      }
+    }, 25, { trailing: false }))
 
     const years = months.map((d, i) => +d.date.month === 0 ? { year: d.date.year, index: i } : false).filter(Boolean)
     const ticks = axis.selectAll('.tick')
@@ -120,24 +158,17 @@ export function bind (container) {
     .attr('y1', getMarginTop())
     .attr('y2', height)
 
-    overlay.append('text')
+    const overlayDate = overlay.append('text')
+    .attr('class', 'overlay-date')
+    .attr('dy', 20)
+
+    const overlayText = overlay.append('text')
     .attr('class', 'overlay-text')
-    .attr('dy', 10)
 
     overlay.append('line')
     .attr('class', 'overlay-line')
-    .attr('y1', 15)
+    .attr('y1', 25)
     .attr('y2', height - getMarginTop())
-
-    svg.on('mousemove', throttle(function (d) {
-      let location = mouse(this)
-      let index = Math.round(x.invert(location[0]))
-      let item = months[index]
-
-      overlay.attr('transform', 'translate(' + location[0] + ',' + getMarginTop() + ')')
-      overlay.select('.overlay-text')
-      .text((item.date.month + 1) + '/' + item.date.year)
-    }, 25, { trailing: false }))
 
     const resizeHandler = throttle(onWindowResize, 400, { leading: false })
     window.addEventListener('resize', resizeHandler)
@@ -147,4 +178,39 @@ export function bind (container) {
       window.removeEventListener('resize', resizeHandler)
     }
   }
+}
+
+const perLine = 6
+function sampleTweet (textNode, tweets, rightAlign) {
+  let count = tweets.length
+  let lines = []
+  if (count) {
+    let index = Math.floor(Math.random() * count)
+    let { text, id } = tweets[index]
+
+    let words = text.split(' ')
+    let wordCount = words.length
+
+    let lineCount = Math.ceil(wordCount / perLine)
+    for (let i = 0; i < lineCount; ++i) {
+      let end = (i + 1) * perLine
+      if (end > wordCount) {
+        end = wordCount
+      }
+      lines.push(words.slice(i * perLine, end).join(' '))
+    }
+  }
+
+  let tspans = textNode.selectAll('tspan')
+  .data(lines)
+
+  tspans.enter().append('tspan')
+  .attr('x', 0)
+  .attr('dx', rightAlign ? -5 : 5)
+  .attr('y', (d, i) => (i + 1) * 20)
+  .attr('dy', 20)
+  .merge(tspans)
+  .attr('dx', rightAlign ? -5 : 5)
+  .text(d => d)
+  .exit().remove()
 }

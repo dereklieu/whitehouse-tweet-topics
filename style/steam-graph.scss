@@ -1,5 +1,9 @@
-$main: #666;
+$main: #333;
 $light: #BBB;
+
+.layer {
+  transition: opacity 0.1s ease-in-out;
+}
 
 .tick-text {
   text-anchor: middle;
@@ -7,18 +11,23 @@ $light: #BBB;
 }
 
 .tick-line {
-  stroke: lighten($light, 20%);
+  stroke: lighten($light, 5%);
 }
 
 .overlay {
   transition: transform 0.1s;
+  pointer-events: none;
 }
 
-.overlay-text {
+.overlay-date {
   text-anchor: middle;
+}
+
+.overlay-date, .overlay-text {
   fill: $main;
 }
 
 .overlay-line {
-  stroke: lighten($main, 20%);
+  stroke: #9C9CC9;
+  stroke-width: 2;
 }
