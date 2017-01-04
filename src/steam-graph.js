@@ -84,7 +84,7 @@ export function bind (container) {
   return function render (data) {
     reflow()
     const { topics, months, max } = data
-    console.log(months)
+    console.log(topics)
 
     x.domain([0, months.length - 1])
     y.domain([0, max])
@@ -99,6 +99,9 @@ export function bind (container) {
     .attr('class', 'layer')
     .attr('d', areaFn)
     .style('fill', () => color(Math.random()))
+    .on('mouseover', function (d, i) {
+      console.log(topics[i].sample.map(d => d.corpus).join('\n'))
+    })
 
     const years = months.map((d, i) => +d.date.month === 0 ? { year: d.date.year, index: i } : false).filter(Boolean)
     const ticks = axis.selectAll('.tick')
