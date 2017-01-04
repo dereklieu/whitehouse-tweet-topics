@@ -139,6 +139,10 @@ export function bind (container) {
       .text((item.date.month + 1) + '/' + item.date.year)
     }, 25, { trailing: false }))
 
+    svg.on('mouseout', function () {
+      overlay.attr('transform', 'translate(-100,' + getMarginTop() + ')')
+    })
+
     const resizeHandler = throttle(onWindowResize, 400, { leading: false })
     window.addEventListener('resize', resizeHandler)
 
