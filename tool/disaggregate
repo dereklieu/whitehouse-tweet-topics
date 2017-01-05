@@ -5,6 +5,7 @@ var path = require('path')
 var argv = require('minimist')(process.argv.slice(2))
 var input = argv.input
 var d3 = require('d3')
+var he = require('he')
 
 if (!input) {
   console.log('Needs input')
@@ -38,7 +39,7 @@ document.forEach(function (topicData, i) {
     var prop = String(d.year) + String(d.month - 1)
     bymonth[prop] = bymonth[prop] || {count: 0, sample: []}
     bymonth[prop].count += 1
-    bymonth[prop].sample.push({text: d.text, id: d.id})
+    bymonth[prop].sample.push({text: he.decode(d.text.replace('&amp;', '&')), id: d.id})
   })
 
   summary.count = count

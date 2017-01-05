@@ -3,9 +3,13 @@
 require('../style/steam-graph.scss')
 
 import { select, selectAll, mouse } from 'd3-selection'
-import { scaleLinear } from 'd3-scale'
+import { scaleLinear, scaleOrdinal } from 'd3-scale'
 import { area, curveCardinal, stack, stackOrderInsideOut, stackOffsetWiggle } from 'd3-shape'
 import { isElement, without, throttle } from 'lodash'
+import { range } from 'd3-array'
+
+import { clusterNames } from './topics'
+import { colors } from './colors'
 
 function parseDate (dateString) {
   return new Date(dateString.slice(0, 4), dateString.slice(4, 6))
@@ -22,11 +26,14 @@ export function bind (container) {
   const overlay = svg.append('g')
   .attr('class', 'overlay')
   .attr('transform', 'translate(-100,' + getMarginTop() + ')')
+  const legend = select(container).append('ul')
+  .attr('class', 'legend')
 
   const x = scaleLinear()
   const y = scaleLinear()
-  const color = scaleLinear()
-  .range(['#aad', '#556'])
+  const color = scaleOrdinal()
+  .range(colors)
+  .domain(range(0, colors.length))
 
   const stackFn = stack()
   .offset(stackOffsetWiggle)
@@ -49,7 +56,7 @@ export function bind (container) {
     .attr('height', height)
 
     x.range([0, width])
-    y.range([height / 1.5, 0])
+    y.range([height / 1.335, 0])
   }
 
   function resize () {
@@ -78,7 +85,7 @@ export function bind (container) {
   }
 
   function getMarginTop () {
-    return 100 // this *might* change on mobile
+    return 180 // this *might* change on mobile
   }
 
   return function render (data) {
@@ -93,6 +100,7 @@ export function bind (container) {
     stackFn.keys(keys)
     const layers = stackFn(months)
 
+    // steamgraph layers
     const paths = chart.selectAll('.layer')
     .data(layers)
     .enter().append('path')
@@ -130,14 +138,19 @@ export function bind (container) {
         let month = months[index]
         let tweets = topics[index][+key]
 
-        overlayDate.text((month.date.month + 1) + '/' + month.date.year)
-
         let rightAlign = index > months.length * 0.6
         sampleTweet(overlayText, tweets, rightAlign)
         overlayText.style('text-anchor', rightAlign ? 'end' : 'start')
+
+        overlayDate.text((month.date.month + 1) + '/' + month.date.year)
+        overlayTitle.text('"' + clusterNames[+key] + '"')
+          .style('text-anchor', rightAlign ? 'start' : 'end')
+          .style('fill', color(+key))
+          .attr('dx', rightAlign ? 5 : -5)
       }
     }, 25, { trailing: false }))
 
+    // years axis and indicator lines
     const years = months.map((d, i) => +d.date.month === 0 ? { year: d.date.year, index: i } : false).filter(Boolean)
     const ticks = axis.selectAll('.tick')
     .data(years)
@@ -158,6 +171,7 @@ export function bind (container) {
     .attr('y1', getMarginTop())
     .attr('y2', height)
 
+    // hover guidelines
     const overlayDate = overlay.append('text')
     .attr('class', 'overlay-date')
     .attr('dy', 20)
@@ -165,10 +179,29 @@ export function bind (container) {
     const overlayText = overlay.append('text')
     .attr('class', 'overlay-text')
 
+    const overlayTitle = overlay.append('text')
+    .attr('class', 'overlay-title')
+    .attr('dy', 40)
+
     overlay.append('line')
     .attr('class', 'overlay-line')
     .attr('y1', 25)
-    .attr('y2', height - getMarginTop())
+    .attr('y2', height)
+
+    // legend
+    legend.selectAll('li')
+    .data(clusterNames)
+    .enter().append('li')
+    .text(d => d)
+    .style('color', (d, i) => color(i))
+    .on('mouseover', function (d, i) {
+      paths.style('opacity', (path, pathIndex) => {
+        return pathIndex === i ? 1 : 0.25
+      })
+    })
+    .on('mouseout', function () {
+      paths.style('opacity', 1)
+    })
 
     const resizeHandler = throttle(onWindowResize, 400, { leading: false })
     window.addEventListener('resize', resizeHandler)

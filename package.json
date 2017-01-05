@@ -19,6 +19,7 @@
     "csvtojson": "^1.0.3",
     "extract-text-webpack-plugin": "^1.0.1",
     "get-stdin": "^5.0.1",
+    "he": "^1.1.0",
     "lda": "^0.1.9",
     "live-server": "^1.1.0",
     "minimist": "^1.2.0",

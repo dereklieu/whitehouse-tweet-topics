@@ -19,10 +19,15 @@ $light: #BBB;
   pointer-events: none;
 }
 
+.overlay-title {
+  font-weight: bold;
+}
+
 .overlay-date {
   text-anchor: middle;
 }
 
+.overlay-title,
 .overlay-date, .overlay-text {
   fill: $main;
 }
@@ -30,4 +35,17 @@ $light: #BBB;
 .overlay-line {
   stroke: #9C9CC9;
   stroke-width: 2;
+}
+
+.legend {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  width: 100%;
+  li {
+    cursor: default;
+    font-weight: bold;
+    display: inline-block;
+    margin: 0 0 0 1em;
+  }
 }
