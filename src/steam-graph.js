@@ -54,7 +54,7 @@ export function bind (container) {
     .attr('height', height)
 
     x.range([0, width])
-    y.range([height / 1.5, 0])
+    y.range([height / 1.335, 0])
   }
 
   function resize () {
@@ -83,7 +83,7 @@ export function bind (container) {
   }
 
   function getMarginTop () {
-    return 100 // this *might* change on mobile
+    return 180 // this *might* change on mobile
   }
 
   return function render (data) {
