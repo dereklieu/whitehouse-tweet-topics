@@ -73,11 +73,11 @@ for tweet in documents:
     corpus.append(' '.join([stemmer.stem(word) for word in tokenized]).encode('utf8', 'ignore'))
 
 # vectorize using tfidf
-vectorizer = TfidfVectorizer(max_df=0.5, min_df=2, use_idf=1)
+vectorizer = TfidfVectorizer()
 X = vectorizer.fit_transform(corpus)
 print X.shape
 
-km = KMeans(init='k-means++', n_init=1, n_clusters=K, max_iter=10000, verbose=0)
+km = KMeans(n_init=1, n_clusters=K, max_iter=10000, verbose=0)
 km.fit(X)
 
 clustered_labels = km.labels_
