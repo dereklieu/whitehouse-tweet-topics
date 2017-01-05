@@ -19,10 +19,15 @@ $light: #BBB;
   pointer-events: none;
 }
 
+.overlay-title {
+  font-weight: bold;
+}
+
 .overlay-date {
   text-anchor: middle;
 }
 
+.overlay-title,
 .overlay-date, .overlay-text {
   fill: $main;
 }

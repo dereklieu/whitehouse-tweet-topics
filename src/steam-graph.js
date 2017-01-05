@@ -3,9 +3,13 @@
 require('../style/steam-graph.scss')
 
 import { select, selectAll, mouse } from 'd3-selection'
-import { scaleLinear } from 'd3-scale'
+import { scaleLinear, scaleOrdinal } from 'd3-scale'
 import { area, curveCardinal, stack, stackOrderInsideOut, stackOffsetWiggle } from 'd3-shape'
 import { isElement, without, throttle } from 'lodash'
+import { range } from 'd3-array'
+
+import { clusterNames } from './topics'
+import { colors } from './colors'
 
 function parseDate (dateString) {
   return new Date(dateString.slice(0, 4), dateString.slice(4, 6))
@@ -25,8 +29,9 @@ export function bind (container) {
 
   const x = scaleLinear()
   const y = scaleLinear()
-  const color = scaleLinear()
-  .range(['#aad', '#556'])
+  const color = scaleOrdinal()
+  .range(colors)
+  .domain(range(0, colors.length))
 
   const stackFn = stack()
   .offset(stackOffsetWiggle)
@@ -130,11 +135,15 @@ export function bind (container) {
         let month = months[index]
         let tweets = topics[index][+key]
 
-        overlayDate.text((month.date.month + 1) + '/' + month.date.year)
-
         let rightAlign = index > months.length * 0.6
         sampleTweet(overlayText, tweets, rightAlign)
         overlayText.style('text-anchor', rightAlign ? 'end' : 'start')
+
+        overlayDate.text((month.date.month + 1) + '/' + month.date.year)
+        overlayTitle.text('"' + clusterNames[+key] + '"')
+          .style('text-anchor', rightAlign ? 'start' : 'end')
+          .style('fill', color(+key))
+          .attr('dx', rightAlign ? 5 : -5)
       }
     }, 25, { trailing: false }))
 
@@ -164,6 +173,10 @@ export function bind (container) {
 
     const overlayText = overlay.append('text')
     .attr('class', 'overlay-text')
+
+    const overlayTitle = overlay.append('text')
+    .attr('class', 'overlay-title')
+    .attr('dy', 40)
 
     overlay.append('line')
     .attr('class', 'overlay-line')
