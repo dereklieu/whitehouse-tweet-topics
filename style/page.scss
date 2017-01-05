@@ -1,7 +1,15 @@
+@mixin mobile {
+  @media screen and (max-width: 767px) { @content; }
+}
+
 html, body {
   height: 100%;
-  overflow: hidden;
   font-family: 'Bitter', serif;
+  overflow: hidden;
+  @include mobile {
+    height: auto;
+    overflow: auto;
+  }
 }
 
 a {
@@ -15,6 +23,10 @@ a {
 
 .full-bleed {
   height: 100%;
+  position: relative;
+  @include mobile {
+    height: 75%;
+  }
 }
 
 .header {
@@ -22,10 +34,14 @@ a {
   left: 0;
   top: 0;
   display: block;
-  padding: 1em;
+  padding: 1em 1em 0;
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  @include mobile {
+    position: relative;
+    display: block;
+  }
 }
 
 .title {
@@ -38,6 +54,9 @@ a {
 .description {
   margin: 0 0 0 1em;
   font-size: 0.875em;
+  @include mobile {
+    margin: 1em 0;
+  }
 }
 
 .color-potus {
@@ -47,3 +66,4 @@ a {
 .color-obamacare {
   color: #CAB2D6;
 }
+

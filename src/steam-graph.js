@@ -20,14 +20,14 @@ export function bind (container) {
     throw new Error('Bind must be passed a node')
   }
 
+  const legend = select(container).append('ul')
+  .attr('class', 'legend')
+
   const svg = select(container).append('svg')
   const axis = svg.append('g').attr('class', 'x axis')
   const chart = svg.append('g').attr('class', 'steam-graph')
   const overlay = svg.append('g')
   .attr('class', 'overlay')
-  .attr('transform', 'translate(-100,' + getMarginTop() + ')')
-  const legend = select(container).append('ul')
-  .attr('class', 'legend')
 
   const x = scaleLinear()
   const y = scaleLinear()
@@ -85,7 +85,11 @@ export function bind (container) {
   }
 
   function getMarginTop () {
-    return 180 // this *might* change on mobile
+    return isMobile() ? 30 : 180
+  }
+
+  function isMobile () {
+    return width <= 767
   }
 
   return function render (data) {
@@ -172,6 +176,8 @@ export function bind (container) {
     .attr('y2', height)
 
     // hover guidelines
+    overlay.attr('transform', 'translate(-100,' + getMarginTop() + ')')
+
     const overlayDate = overlay.append('text')
     .attr('class', 'overlay-date')
     .attr('dy', 20)
@@ -187,7 +193,6 @@ export function bind (container) {
     .attr('class', 'overlay-line')
     .attr('y1', 25)
     .attr('y2', height)
-
 
     legend.append('label')
     .attr('class', 'legend-label')
@@ -217,40 +222,40 @@ export function bind (container) {
       window.removeEventListener('resize', resizeHandler)
     }
   }
-}
 
-const perLine = 6
-function sampleTweet (textNode, tweets, rightAlign) {
-  let count = tweets.length
-  let lines = []
-  if (count) {
-    let index = Math.floor(Math.random() * count)
-    let { text, id } = tweets[index]
+  function sampleTweet (textNode, tweets, rightAlign) {
+    let perLine = isMobile() ? 4 : 6
+    let count = tweets.length
+    let lines = []
+    if (count) {
+      let index = Math.floor(Math.random() * count)
+      let { text, id } = tweets[index]
 
-    let words = text.split(' ')
-    let wordCount = words.length
+      let words = text.split(' ')
+      let wordCount = words.length
 
-    let lineCount = Math.ceil(wordCount / perLine)
-    for (let i = 0; i < lineCount; ++i) {
-      let end = (i + 1) * perLine
-      if (end > wordCount) {
-        end = wordCount
+      let lineCount = Math.ceil(wordCount / perLine)
+      for (let i = 0; i < lineCount; ++i) {
+        let end = (i + 1) * perLine
+        if (end > wordCount) {
+          end = wordCount
+        }
+        lines.push(words.slice(i * perLine, end).join(' '))
       }
-      lines.push(words.slice(i * perLine, end).join(' '))
     }
+
+    let tspans = textNode.selectAll('tspan')
+    .data(lines)
+
+    tspans.enter().append('tspan')
+    .attr('x', 0)
+    .attr('dx', rightAlign ? -5 : 5)
+    .attr('y', (d, i) => (i + 1) * 20)
+    .attr('dy', 20)
+    .merge(tspans)
+    .attr('dx', rightAlign ? -5 : 5)
+    .text(d => d)
+
+    tspans.exit().remove()
   }
-
-  let tspans = textNode.selectAll('tspan')
-  .data(lines)
-
-  tspans.enter().append('tspan')
-  .attr('x', 0)
-  .attr('dx', rightAlign ? -5 : 5)
-  .attr('y', (d, i) => (i + 1) * 20)
-  .attr('dy', 20)
-  .merge(tspans)
-  .attr('dx', rightAlign ? -5 : 5)
-  .text(d => d)
-
-  tspans.exit().remove()
 }
