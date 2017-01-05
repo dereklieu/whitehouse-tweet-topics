@@ -188,10 +188,16 @@ export function bind (container) {
     .attr('y1', 25)
     .attr('y2', height)
 
+
+    legend.append('label')
+    .attr('class', 'legend-label')
+    .text('Topics:')
+
     // legend
-    legend.selectAll('li')
+    legend.selectAll('.legend-item')
     .data(clusterNames)
     .enter().append('li')
+    .attr('class', 'legend-item')
     .text(d => d)
     .style('color', (d, i) => color(i))
     .on('mouseover', function (d, i) {
