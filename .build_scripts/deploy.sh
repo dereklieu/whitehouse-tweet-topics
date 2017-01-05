@@ -3,7 +3,7 @@ set -e # halt script on error
 
 if [ $TRAVIS_PULL_REQUEST = "false" ] && [ $TRAVIS_BRANCH = "master" ]; then
   mkdir deploy
-  cp -a dist index.html src/json deploy
+  cp -a dist assets index.html src/json deploy
   cd deploy
   git init
   git config user.name "Travis-CI"

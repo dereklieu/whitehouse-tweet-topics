@@ -123,6 +123,7 @@ export function bind (container) {
       overlay.attr('transform', 'translate(-100,' + getMarginTop() + ')')
       overlayDate.text('')
       overlayText.selectAll('tspan').remove()
+      overlayTitle.text('')
       currentId = null
     })
 
