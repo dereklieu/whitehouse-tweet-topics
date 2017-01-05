@@ -42,10 +42,12 @@ $light: #BBB;
   top: 100px;
   left: 0;
   width: 100%;
-  li {
-    cursor: default;
-    font-weight: bold;
-    display: inline-block;
-    margin: 0 0 0 1em;
-  }
+}
+
+.legend-label,
+.legend-item {
+  cursor: default;
+  font-weight: bold;
+  display: inline-block;
+  margin: 0 0 0 1em;
 }

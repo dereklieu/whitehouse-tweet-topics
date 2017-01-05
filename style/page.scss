@@ -7,7 +7,7 @@ html, body {
 a {
   color: #1863A1;
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: underline;
   &:hover {
     color: #0181eb;
   }
@@ -21,21 +21,29 @@ a {
   position: fixed;
   left: 0;
   top: 0;
-  width: 100%;
+  display: block;
   padding: 1em;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .title {
-  font-size: 2.8em;
-  line-height: 1em;
-  margin: 0 0.25em 0 0;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin: 0;
   flex-shrink: 0;
 }
 
-.sub {
-  display: none;
+.description {
+  margin: 0 0 0 1em;
   font-size: 0.875em;
+}
+
+.color-potus {
+  color: #FDBF6F;
+}
+
+.color-obamacare {
+  color: #CAB2D6;
 }
