@@ -1,8 +1,16 @@
 $main: #333;
 $light: #BBB;
 
+@mixin mobile {
+  @media screen and (max-width: 767px) { @content; }
+}
+
 .layer {
   transition: opacity 0.1s ease-in-out;
+}
+
+@include mobile {
+  .tick:nth-child(even) { display: none; }
 }
 
 .tick-text {
@@ -42,10 +50,18 @@ $light: #BBB;
   top: 100px;
   left: 0;
   width: 100%;
-  li {
-    cursor: default;
-    font-weight: bold;
-    display: inline-block;
-    margin: 0 0 0 1em;
+  z-index: 99;
+  @include mobile {
+    position: static;
+    top: 0;
+    left: 0;
   }
+}
+
+.legend-label,
+.legend-item {
+  cursor: default;
+  font-weight: bold;
+  display: inline-block;
+  margin: 0 0 0 1em;
 }

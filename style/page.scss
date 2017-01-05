@@ -1,13 +1,21 @@
+@mixin mobile {
+  @media screen and (max-width: 767px) { @content; }
+}
+
 html, body {
   height: 100%;
-  overflow: hidden;
   font-family: 'Bitter', serif;
+  overflow: hidden;
+  @include mobile {
+    height: auto;
+    overflow: auto;
+  }
 }
 
 a {
   color: #1863A1;
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: underline;
   &:hover {
     color: #0181eb;
   }
@@ -15,27 +23,48 @@ a {
 
 .full-bleed {
   height: 100%;
+  position: relative;
+  @include mobile {
+    height: 75%;
+  }
 }
 
 .header {
   position: fixed;
   left: 0;
   top: 0;
-  width: 100%;
-  padding: 1em;
+  display: block;
+  padding: 1em 1em 0;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 98;
+  @include mobile {
+    position: relative;
+    display: block;
+  }
 }
 
 .title {
-  font-size: 2.8em;
-  line-height: 1em;
-  margin: 0 0.25em 0 0;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin: 0;
   flex-shrink: 0;
 }
 
-.sub {
-  display: none;
+.description {
+  margin: 0 0 0 1em;
   font-size: 0.875em;
+  @include mobile {
+    margin: 1em 0;
+  }
 }
+
+.color-potus {
+  color: #FDBF6F;
+}
+
+.color-obamacare {
+  color: #CAB2D6;
+}
+
