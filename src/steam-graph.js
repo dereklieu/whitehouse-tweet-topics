@@ -186,7 +186,7 @@ export function bind (container) {
     overlay.append('line')
     .attr('class', 'overlay-line')
     .attr('y1', 25)
-    .attr('y2', height - getMarginTop())
+    .attr('y2', height)
 
     // legend
     legend.selectAll('li')
