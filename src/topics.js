@@ -3,7 +3,7 @@ export const clusterNames = [
   'RT',
   'jobs',
   'President Obama',
-  '#WHChat',
+  'happening now',
   'climate',
   '@POTUS',
   'students',
